@@ -401,6 +401,12 @@ pip install ./dist/secure_graph_mcp-*.whl
 
    The distribution name **`secure-graph-mcp`** was not registered on PyPI when this README was written; run a **[name search](https://pypi.org/search/?q=secure-graph-mcp)** right before you upload in case someone else claimed it.
 
+**If `twine upload` fails with proxy / tunnel errors** (common on locked-down networks), publish from GitHub instead using **Trusted Publishing** (no API token on your laptop):
+
+1. In PyPI: **[Account → Publishing](https://pypi.org/manage/account/publishing/)** → **Add a new pending publisher** → provider **GitHub** → repository **`devyash/secure-graph-mcp`** (use your fork path if different) → workflow **`publish-pypi.yml`** → optional environment **`pypi`** (must match the workflow `environment:` block).
+2. Merge **`.github/workflows/publish-pypi.yml`** from this repo to your default branch.
+3. In GitHub: **Actions** → **Publish to PyPI** → **Run workflow**, or create a **GitHub Release** (workflow also runs on `release: published`). The first successful run creates the PyPI project if it does not exist yet.
+
 **Cursor note:** `secure-graph-install-cursor` is built around a **git checkout** (`pip install -e <repo>` for a stable tree + hooks). If you only `pip install` from PyPI, use the **[manual MCP configuration](#cursor-manual-mcp-configuration)** pattern (`python -m secure_graph_mcp.mcp_server` from the same environment); package data for the viewer ships inside the wheel.
 
 Pinned versions & metadata live in **`pyproject.toml`** (`requires-python ">=3.10"`, depends on **`mcp>=1.0.0`**).
