@@ -2,6 +2,8 @@
 
 **Secure Graph MCP** is a **local-first** graph memory backed by **SQLite**. AI clients (starting with **[Cursor](https://cursor.com/)** via MCP) store **nodes**, **relationships**, and **field-level properties** through a structured API—not ad-hoc SQL or Markdown blobs in the workspace.
 
+**Repository:** https://github.com/devyash/secure-graph-mcp
+
 Goals:
 
 1. **Durable memory** across chats and repos (path chosen by `SECURE_GRAPH_DB`).
@@ -42,11 +44,11 @@ Python **3.10+** required.
 There is **no** signed macOS `.pkg` / Windows installer or Cursor marketplace entry—Cursor and MCP assume you trust a repo and a Python toolchain. What you *can* do is **one shell command** after setting your Git URL:
 
 ```bash
-export SECURE_GRAPH_MCP_REPO_URL=https://github.com/YOUR_ORG/secure-graph-mcp.git
+export SECURE_GRAPH_MCP_REPO_URL=https://github.com/devyash/secure-graph-mcp.git
 curl -fsSL "$SECURE_GRAPH_MCP_REPO_URL/raw/main/scripts/one_command_install.sh" | bash
 ```
 
-Use your real default branch if it is not `main` (e.g. `raw/master/...`).
+The installer keeps a **persistent clone** at **`~/.local/share/secure-graph-mcp`** (override with **`SECURE_GRAPH_MCP_CLONE_DIR`**) because Cursor’s MCP and hooks must reference a stable **`.venv` path**.
 
 **Already cloned?** From the repo root this is the full automation (no `curl`):
 
@@ -67,7 +69,7 @@ Afterward: **User Rules** (`cursor-user-rule-secure-graph.md`), **Cursor Auto-Ru
 ### Clone + installer (traditional)
 
 ```bash
-git clone <your-fork-or-url>/secure-graph-mcp.git
+git clone https://github.com/devyash/secure-graph-mcp.git
 cd secure-graph-mcp
 python3 scripts/install_cursor_bundle.py
 ```

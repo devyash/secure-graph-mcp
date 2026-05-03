@@ -5,11 +5,13 @@
 #   ./scripts/one_command_install.sh
 #   ./scripts/one_command_install.sh --dry-run
 #
-# From anywhere — set YOUR repo URL (branch in URL path must exist, e.g. main):
-#   export SECURE_GRAPH_MCP_REPO_URL=https://github.com/OWNER/secure-graph-mcp.git
-#   curl -fsSL "$SECURE_GRAPH_MCP_REPO_URL/raw/main/scripts/one_command_install.sh" | bash
+# From anywhere (persistent clone ~/.local/share/secure-graph-mcp — override SECURE_GRAPH_MCP_CLONE_DIR):
+#   curl -fsSL https://github.com/devyash/secure-graph-mcp/raw/main/scripts/one_command_install.sh | bash
 
 set -euo pipefail
+
+UPSTREAM="${SECURE_GRAPH_MCP_REPO_URL:-https://github.com/devyash/secure-graph-mcp.git}"
+DEST="${SECURE_GRAPH_MCP_CLONE_DIR:-$HOME/.local/share/secure-graph-mcp}"
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
@@ -18,33 +20,48 @@ if ! have python3; then
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+piped_install=false
+_src="${BASH_SOURCE[0]}"
+case "$_src" in
+  - | "" | "/dev/stdin") piped_install=true ;;
+  /dev/fd/* | /proc/self/fd/*) piped_install=true ;;
+esac
 
-if [[ -f "$REPO_ROOT/scripts/install_cursor_bundle.py" ]]; then
-  echo "==> Using existing checkout: $REPO_ROOT"
-  exec python3 "$REPO_ROOT/scripts/install_cursor_bundle.py" "$@"
+if [[ "$piped_install" == false ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "$_src")" && pwd)"
+  REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+  if [[ -f "$REPO_ROOT/scripts/install_cursor_bundle.py" ]]; then
+    echo "==> Using existing checkout: $REPO_ROOT"
+    exec python3 "$REPO_ROOT/scripts/install_cursor_bundle.py" "$@"
+  fi
 fi
 
 if ! have git; then
-  echo "Need git to clone the repository, or run this script from inside a secure-graph-mcp checkout." >&2
+  echo "Need git to clone the repository, or run this script from inside the secure-graph-mcp checkout." >&2
   exit 1
 fi
 
-REPO_URL="${SECURE_GRAPH_MCP_REPO_URL:-}"
-if [[ -z "$REPO_URL" ]]; then
-  echo "Not inside a checkout. Set SECURE_GRAPH_MCP_REPO_URL to the git URL, e.g.:" >&2
-  echo "  export SECURE_GRAPH_MCP_REPO_URL=https://github.com/YOU/secure-graph-mcp.git" >&2
-  echo "  curl -fsSL .../one_command_install.sh | bash" >&2
-  exit 1
-fi
+mkdir -p "$(dirname "$DEST")"
 
-TMP="${TMPDIR:-/tmp}/secure-graph-mcp-install.$$"
-cleanup() { rm -rf "$TMP"; }
-trap cleanup EXIT
+clone_or_refresh() {
+  if [[ -d "$DEST/.git" ]]; then
+    echo "==> Updating clone: $DEST"
+    git -C "$DEST" remote set-url origin "$UPSTREAM" 2>/dev/null || true
+    git -C "$DEST" pull --ff-only
+    return
+  fi
 
-echo "==> Cloning $REPO_URL (shallow)..."
-git clone --depth 1 "$REPO_URL" "$TMP/repo"
+  echo "==> Cloning $UPSTREAM → $DEST ..."
+  if git clone --depth 1 --branch main "$UPSTREAM" "$DEST" 2>/dev/null; then
+    return
+  fi
+  git clone --depth 1 --branch master "$UPSTREAM" "$DEST"
+}
+
+clone_or_refresh
+
 echo "==> Running Cursor bundle installer..."
-python3 "$TMP/repo/scripts/install_cursor_bundle.py" "$@"
-echo "==> Done. Restart Cursor; run: secure-graph-verify-cursor"
+python3 "$DEST/scripts/install_cursor_bundle.py" --repo "$DEST" "$@"
+echo "==> Done. Restart Cursor."
+echo "==> Code + .venv : $DEST"
+echo "==> Smoke test   : $DEST/.venv/bin/secure-graph-verify-cursor"
