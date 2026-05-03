@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure Graph Viewer</title>
+    <link rel="stylesheet" href="/viewer.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">Secure Graph Viewer</div>
+        <div class="hint">
+          Topology respects edge permissions by default. Toggle “Ignore edge ACL for expansion” for an admin-only preview that can expose hidden neighborhoods.
+        </div>
+      </header>
+
+      <section class="controls">
+        <label>
+          Agent id
+          <input id="agentId" type="text" autocomplete="off" />
+        </label>
+        <label>
+          Root node key
+          <input id="rootKey" type="text" autocomplete="off" placeholder="person:jane" />
+        </label>
+        <label>
+          Depth
+          <input id="depth" type="number" min="0" max="6" value="2" />
+        </label>
+        <label class="checkbox">
+          <input id="ignoreEdgeAcl" type="checkbox" />
+          Ignore edge ACL for expansion
+        </label>
+        <label class="checkbox">
+          <input id="hideRedactedEdges" type="checkbox" />
+          Hide forbidden edges entirely
+        </label>
+        <button id="loadBtn" type="button">Load graph</button>
+        <div id="status" class="status"></div>
+      </section>
+
+      <main class="main">
+        <div class="canvasWrap">
+          <svg id="graphSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+
+        <aside class="inspector" id="inspector">
+          <div class="inspectorTitle">Inspector</div>
+          <pre id="inspectorBody" class="inspectorBody"></pre>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/viewer.js"></script>
+  </body>
+</html>

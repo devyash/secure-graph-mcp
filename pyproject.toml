@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secure-graph-mcp"
+version = "0.1.0"
+description = "Local-first SQLite graph memory MCP server with field-level permissions."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+secure-graph-mcp = "secure_graph_mcp.mcp_server:main"
+secure-graph-demo = "secure_graph_mcp.demo:main"
+secure-graph-view = "secure_graph_mcp.graph_viewer:main"
+secure-graph-cursor-hook = "secure_graph_mcp.cursor_memory_hook:main"
+secure-graph-install-cursor = "secure_graph_mcp.install_cursor_bundle:main"
+secure-graph-verify-cursor = "secure_graph_mcp.verify_cursor_setup:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+secure_graph_mcp = ["viewer_static/*"]
