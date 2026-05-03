@@ -33,6 +33,7 @@ Python **3.10+** required.
 - [Troubleshooting](#troubleshooting)
 - [Development & tests](#development--tests)
 - [Sharing / packaging](#sharing--packaging)
+- [License](#license)
 - [Security model](#security-model)
 
 ---
@@ -378,6 +379,10 @@ Pinned versions & metadata live in **`pyproject.toml`** (`requires-python ">=3.1
 Security reminder: **`SECURE_GRAPH_DB`** is confidential—don't commit populated DB blobs to Git.
 
 ---
+
+## License
+
+This project is released under the **[MIT License](LICENSE)** ( SPDX: `MIT` ). It is permissive: you may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the conditions in **`LICENSE`**.
 
 ## Security model
 
