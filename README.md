@@ -365,14 +365,43 @@ python3 scripts/install_cursor_bundle.py
 secure-graph-verify-cursor
 ```
 
-**Wheel / CI publishing:**
+**Wheel / local file:**
 
 ```bash
 python -m pip install build
 python -m build
 # dist/*.whl + dist/*.tar.gz
-Recipients: pip install /path/to/wheel.whl && secure-graph-install-cursor ...
+pip install ./dist/secure_graph_mcp-*.whl
 ```
+
+**Publish to PyPI** (so anyone can `pip install secure-graph-mcp`):
+
+1. Create accounts on **[PyPI](https://pypi.org/account/register/)** (and optionally **[TestPyPI](https://test.pypi.org/account/register/)** for a dry run).
+2. Create an **[API token](https://pypi.org/manage/account/token/)** scoped to this project (once the first upload creates it) or use a user-wide token for the first upload.
+3. From a clean git checkout at a release tag / commit:
+
+   ```bash
+   python -m pip install -U build twine
+   python -m build        # writes dist/*.whl and dist/*.tar.gz
+   python -m twine upload dist/*
+   ```
+
+   TestPyPI first (recommended once):
+
+   ```bash
+   python -m twine upload --repository testpypi dist/*
+   pip install -i https://test.pypi.org/simple/ secure-graph-mcp
+   ```
+
+4. After a successful upload, installs are simply:
+
+   ```bash
+   pip install secure-graph-mcp
+   ```
+
+   The distribution name **`secure-graph-mcp`** was not registered on PyPI when this README was written; run a **[name search](https://pypi.org/search/?q=secure-graph-mcp)** right before you upload in case someone else claimed it.
+
+**Cursor note:** `secure-graph-install-cursor` is built around a **git checkout** (`pip install -e <repo>` for a stable tree + hooks). If you only `pip install` from PyPI, use the **[manual MCP configuration](#cursor-manual-mcp-configuration)** pattern (`python -m secure_graph_mcp.mcp_server` from the same environment); package data for the viewer ships inside the wheel.
 
 Pinned versions & metadata live in **`pyproject.toml`** (`requires-python ">=3.10"`, depends on **`mcp>=1.0.0`**).
 

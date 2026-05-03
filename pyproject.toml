@@ -20,6 +20,11 @@ dependencies = [
     "mcp>=1.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/devyash/secure-graph-mcp"
+Repository = "https://github.com/devyash/secure-graph-mcp"
+Issues = "https://github.com/devyash/secure-graph-mcp/issues"
+
 [project.scripts]
 secure-graph-mcp = "secure_graph_mcp.mcp_server:main"
 secure-graph-demo = "secure_graph_mcp.demo:main"
